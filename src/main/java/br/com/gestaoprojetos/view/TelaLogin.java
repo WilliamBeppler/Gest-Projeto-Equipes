@@ -2,100 +2,72 @@ package br.com.gestaoprojetos.view;
 
 import br.com.gestaoprojetos.dao.UsuarioDAO;
 import br.com.gestaoprojetos.model.Usuario;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import br.com.gestaoprojetos.util.SegurancaUtil;
 
-/**
- * Tela de login da aplicação.
- */
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class TelaLogin extends JFrame {
 
-    private JTextField txtLogin;
-    private JPasswordField txtSenha;
-    private JButton btnEntrar;
-    private UsuarioDAO usuarioDAO;
+    private JLabel labelLogin;
+    private JLabel labelSenha;
+    private JTextField campoLogin;
+    private JPasswordField campoSenha;
+    private JButton botaoEntrar;
 
     public TelaLogin() {
-        usuarioDAO = new UsuarioDAO();
-        initComponents();
-    }
-
-    private void initComponents() {
         setTitle("Login - Sistema de Gestão de Projetos");
-        setSize(400, 250);
+        setSize(350, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centraliza a tela
-        setResizable(false);
+        setLocationRelativeTo(null);
+        setLayout(null);
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        labelLogin = new JLabel("Login:");
+        labelLogin.setBounds(30, 30, 80, 25);
+        add(labelLogin);
 
-        JLabel lblTitulo = new JLabel("Acessar o Sistema", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        panel.add(lblTitulo, gbc);
+        campoLogin = new JTextField();
+        campoLogin.setBounds(100, 30, 200, 25);
+        add(campoLogin);
 
-        gbc.gridwidth = 1; // Reset gridwidth
+        labelSenha = new JLabel("Senha:");
+        labelSenha.setBounds(30, 70, 80, 25);
+        add(labelSenha);
 
-        JLabel lblLogin = new JLabel("Login:");
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(lblLogin, gbc);
+        campoSenha = new JPasswordField();
+        campoSenha.setBounds(100, 70, 200, 25);
+        add(campoSenha);
 
-        txtLogin = new JTextField(20);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        panel.add(txtLogin, gbc);
+        botaoEntrar = new JButton("Entrar");
+        botaoEntrar.setBounds(125, 110, 100, 30);
+        add(botaoEntrar);
 
-        JLabel lblSenha = new JLabel("Senha:");
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(lblSenha, gbc);
+        botaoEntrar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String login = campoLogin.getText();
+                String senha = new String(campoSenha.getPassword());
 
-        txtSenha = new JPasswordField(20);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        panel.add(txtSenha, gbc);
+                if (login.isEmpty() || senha.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-        btnEntrar = new JButton("Entrar");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        panel.add(btnEntrar, gbc);
+                String senhaHash = SegurancaUtil.gerarHashSHA256(senha);
+                UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-        btnEntrar.addActionListener(this::realizarLogin);
+                // AQUI ESTÁ A CORREÇÃO: o nome do método é "verificarLogin"
+                Usuario usuario = usuarioDAO.verificarLogin(login, senhaHash);
 
-        // Adiciona o painel ao frame
-        add(panel);
-    }
-
-    private void realizarLogin(ActionEvent e) {
-        String login = txtLogin.getText();
-        String senha = new String(txtSenha.getPassword());
-
-        if (login.isEmpty() || senha.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.", "Atenção", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        Usuario usuario = usuarioDAO.autenticar(login, senha);
-
-        if (usuario != null) {
-            JOptionPane.showMessageDialog(this, "Login realizado com sucesso! Bem-vindo, " + usuario.getNomeCompleto(), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-
-            // Abre a tela principal e fecha a de login
-            TelaPrincipal telaPrincipal = new TelaPrincipal(usuario);
-            telaPrincipal.setVisible(true);
-            this.dispose();
-
-        } else {
-            JOptionPane.showMessageDialog(this, "Login ou senha inválidos.", "Erro de Autenticação", JOptionPane.ERROR_MESSAGE);
-        }
+                if (usuario != null) {
+                    dispose();
+                    TelaPrincipal telaPrincipal = new TelaPrincipal(usuario);
+                    telaPrincipal.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Login ou senha inválidos.", "Erro de Autenticação", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 }

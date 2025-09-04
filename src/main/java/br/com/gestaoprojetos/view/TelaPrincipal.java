@@ -1,89 +1,57 @@
 package br.com.gestaoprojetos.view;
 
 import br.com.gestaoprojetos.model.Usuario;
-import javax.swing.*;
-import java.awt.*;
 
-/**
- * Tela principal (dashboard) da aplicação após o login.
- */
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class TelaPrincipal extends JFrame {
 
-    private Usuario usuarioLogado;
+    private JLabel labelBoasVindas;
 
-    public TelaPrincipal(Usuario usuario) {
-        this.usuarioLogado = usuario;
-        initComponents();
-    }
-
-    private void initComponents() {
-        setTitle("Sistema de Gestão de Projetos");
+    public TelaPrincipal(Usuario usuarioLogado) {
+        setTitle("Sistema de Gestão de Projetos - Painel Principal");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Painel Superior com informações do usuário
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JLabel lblBoasVindas = new JLabel("Bem-vindo, " + usuarioLogado.getNomeCompleto() + " | Perfil: " + usuarioLogado.getPerfil());
-        lblBoasVindas.setFont(new Font("Arial", Font.BOLD, 14));
-        topPanel.add(lblBoasVindas, BorderLayout.WEST);
+        JMenuBar menuBar = new JMenuBar();
 
-        JButton btnLogout = new JButton("Sair");
-        btnLogout.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(this, "Deseja realmente sair do sistema?", "Confirmação de Saída", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                new TelaLogin().setVisible(true);
-                this.dispose();
-            }
-        });
-        topPanel.add(btnLogout, BorderLayout.EAST);
+        JMenu menuCadastros = new JMenu("Cadastros");
+        JMenuItem itemUsuarios = new JMenuItem("Usuários");
+        JMenuItem itemProjetos = new JMenuItem("Projetos");
+        JMenuItem itemEquipas = new JMenuItem("Equipas (não implementado)");
+        JMenuItem itemTarefas = new JMenuItem("Tarefas");
+        menuCadastros.add(itemUsuarios);
+        menuCadastros.add(itemProjetos);
+        menuCadastros.add(itemEquipas);
+        menuCadastros.add(itemTarefas);
 
-        // Painel Central com funcionalidades
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
-        JLabel lblMensagem = new JLabel("Funcionalidades do sistema aparecerão aqui.");
-        centerPanel.add(lblMensagem);
+        JMenu menuRelatorios = new JMenu("Relatórios");
+        JMenuItem itemRelatorioProjetos = new JMenuItem("Andamento dos Projetos");
+        JMenuItem itemRelatorioDesempenho = new JMenuItem("Desempenho dos Colaboradores");
+        JMenuItem itemRelatorioRisco = new JMenuItem("Projetos em Risco"); // NOVO ITEM
+        menuRelatorios.add(itemRelatorioProjetos);
+        menuRelatorios.add(itemRelatorioDesempenho);
+        menuRelatorios.add(itemRelatorioRisco); // NOVO ITEM ADICIONADO AO MENU
 
-        // Adiciona botões com base no perfil do usuário
-        adicionarBotoesPorPerfil(centerPanel);
+        menuBar.add(menuCadastros);
+        menuBar.add(menuRelatorios);
+        setJMenuBar(menuBar);
 
-        // Adiciona os painéis ao frame
-        add(topPanel, BorderLayout.NORTH);
-        add(centerPanel, BorderLayout.CENTER);
-    }
+        labelBoasVindas = new JLabel("Bem-vindo(a), " + usuarioLogado.getNome_completo() + "!");
+        labelBoasVindas.setHorizontalAlignment(SwingConstants.CENTER);
+        add(labelBoasVindas);
 
-    private void adicionarBotoesPorPerfil(JPanel panel) {
-        // Limpa o painel antes de adicionar novos botões
-        panel.removeAll();
-        panel.add(new JLabel("Selecione uma opção:"));
+        // --- Ações dos Menus ---
+        itemUsuarios.addActionListener(e -> new TelaCadastroUsuario().setVisible(true));
+        itemProjetos.addActionListener(e -> new TelaCadastroProjeto().setVisible(true));
+        itemTarefas.addActionListener(e -> new TelaCadastroTarefa().setVisible(true));
+        itemRelatorioProjetos.addActionListener(e -> new TelaRelatorioProjetos().setVisible(true));
+        itemRelatorioDesempenho.addActionListener(e -> new TelaRelatorioDesempenho().setVisible(true));
 
-        switch (usuarioLogado.getPerfil()) {
-            case ADMINISTRADOR:
-                panel.add(criarBotao("Gerenciar Usuários"));
-                panel.add(criarBotao("Gerenciar Projetos"));
-                panel.add(criarBotao("Gerenciar Equipes"));
-                panel.add(criarBotao("Ver Relatórios"));
-                break;
-            case GERENTE:
-                panel.add(criarBotao("Meus Projetos"));
-                panel.add(criarBotao("Gerenciar Equipes"));
-                panel.add(criarBotao("Ver Relatórios"));
-                break;
-            case COLABORADOR:
-                panel.add(criarBotao("Minhas Tarefas"));
-                break;
-        }
-
-        panel.revalidate();
-        panel.repaint();
-    }
-
-    private JButton criarBotao(String texto) {
-        JButton button = new JButton(texto);
-        button.setPreferredSize(new Dimension(200, 40));
-        button.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Funcionalidade '" + texto + "' ainda não implementada.", "Em Desenvolvimento", JOptionPane.INFORMATION_MESSAGE);
-        });
-        return button;
+        // NOVA AÇÃO PARA O RELATÓRIO DE RISCO
+        itemRelatorioRisco.addActionListener(e -> new TelaRelatorioProjetosRisco().setVisible(true));
     }
 }

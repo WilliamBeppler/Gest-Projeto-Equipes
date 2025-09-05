@@ -68,3 +68,56 @@ MySQL Server & Workbench - Versão 8.
 Apache Maven (geralmente já vem integrado em IDEs modernas).
 
 Uma IDE Java, como IntelliJ IDEA ou Eclipse.
+
+Tecnologias e Arquitetura
+Tecnologias Utilizadas
+Linguagem: Java (JDK 11 ou superior)
+
+Interface Gráfica: Java Swing
+
+Banco de Dados: MySQL 8
+
+Gestor de Dependências: Apache Maven
+
+Driver de Conexão: MySQL Connector/J
+
+Arquitetura de Software
+O projeto foi estruturado seguindo os princípios da separação de responsabilidades, utilizando uma arquitetura em camadas inspirada nos padrões MVC (Model-View-Controller) e DAO (Data Access Object).
+
+model: Contém as classes de entidade (POJOs) que espelham as tabelas da base de dados (Usuario, Projeto, Tarefa).
+
+view: Responsável por todas as classes da interface gráfica (TelaLogin, TelaPrincipal, etc.).
+
+dao: Camada de acesso a dados. Contém todo o código SQL e a lógica para comunicar com o banco de dados.
+
+util: Classes utilitárias, como a de conexão com o banco de dados (ConexaoMySQL) e de segurança (SegurancaUtil).
+
+main: Ponto de entrada da aplicação.
+
+Como Executar o Projeto
+Siga os passos abaixo para configurar e executar o sistema no seu ambiente de desenvolvimento.
+
+Pré-requisitos
+Java Development Kit (JDK) - Versão 11 ou superior.
+
+MySQL Server & Workbench - Versão 8.
+
+Apache Maven (geralmente já vem integrado em IDEs modernas).
+
+Uma IDE Java, como IntelliJ IDEA ou Eclipse.
+
+1. Configuração do Banco de Dados
+Abra o MySQL Workbench e conecte-se à sua instância local.
+
+Crie um novo schema (banco de dados) ou utilize o script fornecido. O script database_script.sql (disponível na raiz do projeto) cria o banco de dados gestao_projetos_db, as tabelas necessárias e insere um utilizador administrador padrão.
+
+Execute o conteúdo completo do script database_script.sql.
+
+2. Configuração do Projeto
+Clone este repositório ou descarregue os ficheiros do projeto.
+
+Abra o projeto na sua IDE como um "Existing Maven Project". A IDE irá descarregar automaticamente as dependências (como o MySQL Connector).
+
+Navegue até o ficheiro src/main/java/br/com/gestaoprojetos/util/ConexaoMySQL.java.
+
+
